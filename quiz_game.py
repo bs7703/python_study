@@ -1,9 +1,12 @@
 #quiz_game.py
 import json
+from quiz import Quiz
 class QuizGame:
-	def	__init__(self, config_path):
+	def	__init__(self, config_path, basic_path):
 		with open(config_path, 'r', encoding='utf-8') as f:
 			self.config = json.load(f)
+		with open(basic_path, 'r', encoding='utf-8') as f:
+			self.basic_data = json.load(f)
 		self.is_running = True
 		pass
 
@@ -40,6 +43,14 @@ class QuizGame:
 	def	start_quiz(self):
 		pass
 
+	def	set_basic_quiz(self):
+		base_data = []
+		try:
+			for i, a in enumerate(self.basic_data, 1):
+				base_data.append(Quiz(a['question'], a['choices'], a['answer'], a['hint'], a['explanation']))
+		except (ValueError):
+			print(f"{e}")
+		return base_data
 	def	show_score(self):
 		pass
 
@@ -56,5 +67,5 @@ class QuizGame:
 		pass
 
 if	__name__ == "__main__":
-	game = QuizGame("config.json")
+	game = QuizGame("config.json", "basic_data.json")
 	game.run()
