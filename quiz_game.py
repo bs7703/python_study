@@ -61,7 +61,7 @@ class QuizGame:
 		print("\n 정답이외의 힌트가 필요하면 5를 누르세요. n점차감")
 		while data is None:
 			data = self.advanced_input(0, len(quiz.choices) + 1, 1)
-			if (data == 4):
+			if (data == len(quiz.choices) + 1):
 				#점수차감과 힌트가없을시 미차감구문 작성
 				print(quiz.show_hint())
 				data = self.advanced_input(0, len(quiz.choices), 2)
