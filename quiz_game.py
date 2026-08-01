@@ -22,7 +22,7 @@ class QuizGame:
 		while self.is_running:
 			self.display_menu()
 			print("숫자를 입력해주세요(1~5):")
-			idx = self.advanced_input(0,4,0)
+			idx = self.advanced_input(0,len(self.config['menu_options']),0)
 			if idx is None:
 				pass
 			else:
@@ -33,7 +33,7 @@ class QuizGame:
 					print("해당 함수가 정의되지 않았습니다")
 					self.is_running = False
 
-	def	advanced_input(self, range0, range1, mode = 0):
+	def	advanced_input(self, range0 = 0, range1 = 0, mode = 0):
 		try:
 			choice = input().strip()
 			idx = int(choice) - 1
