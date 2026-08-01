@@ -22,7 +22,7 @@ class QuizGame:
 	def	run(self):
 		while self.is_running:
 			self.display_menu()
-			print("숫자를 입력해주세요(1~5):")
+			print(f"숫자를 입력해주세요(1~{len(self.config['menu_options'])}):")
 			idx = self.advanced_input(0,len(self.config['menu_options']),0)
 			if idx is None:
 				pass
@@ -41,7 +41,7 @@ class QuizGame:
 			if not (range0 <= idx < range1):
 				raise IndexError
 		except (ValueError):
-			print("범위내 숫자 이외에 입력하지 말아주세요" + " 0점처리됩니다" if mode == 1 else "")
+			print("범위내 숫자 이외에 입력하지 말아주세요" + (" 0점처리됩니다" if mode == 1 else ""))
 			return None
 		except (IndexError):
 			if (mode == 0 or mode == 1):

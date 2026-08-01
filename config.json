@@ -15,6 +15,9 @@
     "game_settings":
     {
     "desc_mode": 0 ,
-    "quiz_time_out": 0
+    "quiz_time_out": 0,
+    "answer_factor":3,
+    "hint_factor":1,
+    "wrong_factor":2
     }
 }
