@@ -6,7 +6,7 @@
         "2. 점수 확인",
         "3. 종료"
     ],
-    "exit_message" : "게임을 종료합니다"
+    "exit_message" : "게임을 종료합니다" ,
     "ui_style":
     {
         "line_char" : "=",
