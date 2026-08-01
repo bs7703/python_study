@@ -1,6 +1,6 @@
 #quiz_game.py
 import json
-class QuizzGame:
+class QuizGame:
 	def	__init__(self, config_path):
 		with open(config_path, 'r', encoding='utf-8') as f:
 			self.config = json.load(f)
@@ -18,9 +18,9 @@ class QuizzGame:
 		while self.is_running:
 			self.display_menu()
 			try:
-				choice = int(input("원하는 메뉴 번호를 입력하세요:").strip())
+				choice = int(input("원하는 메뉴 번호를 입력하세요(1~5):").strip())
 				idx = choice - 1
-				if idx >= 3 or idx < 0:
+				if not(0 <= idx < len(self.config['menu_options'])):
 					raise IndexError
 				func = self.config['menu_options'][idx]['action']
 				if hasattr(self, func):
@@ -46,9 +46,6 @@ class QuizzGame:
 	def	exit_game(self):
 		self.is_running = False
 
-	def	play_quiz(self):
-		pass
-
 	def	add_quiz(self):
 		pass
 
@@ -59,5 +56,5 @@ class QuizzGame:
 		pass
 
 if	__name__ == "__main__":
-	game = QuizzGame("config.json")
+	game = QuizGame("config.json")
 	game.run()
