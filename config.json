@@ -11,5 +11,10 @@
     {
         "line_char" : "=",
         "line_length" : 30
+    },
+    "game_settings":
+    {
+    "desc_mode": 0 ,
+    "quiz_time_out": 0
     }
 }

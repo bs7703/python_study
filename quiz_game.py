@@ -17,27 +17,38 @@ class QuizGame:
 		for	option in self.config['menu_options']:	
 			print(option['label'])
 		print(f"{self.config['ui_style']['line_char']}" * self.config['ui_style']['line_length'])
+
 	def	run(self):
 		while self.is_running:
 			self.display_menu()
-			try:
-				choice = int(input("원하는 메뉴 번호를 입력하세요(1~5):").strip())
-				idx = choice - 1
-				if not(0 <= idx < len(self.config['menu_options'])):
-					raise IndexError
+			print("숫자를 입력해주세요(1~5):")
+			idx = self.advanced_input(0,4,0)
+			if idx is None:
+				pass
+			else:
 				func = self.config['menu_options'][idx]['action']
 				if hasattr(self, func):
 					getattr(self, func)()
 				else :
 					print("해당 함수가 정의되지 않았습니다")
 					self.is_running = False
-			except (ValueError) :
-				print("범위내 숫자 이외에 입력하지 말아주세요")
-			except (IndexError) :
-				print(f"{choice}는 적절한 번호가아닙니다 다시입력해주세요")
-			except (KeyboardInterrupt, EOFError):
-				print("사용자에의해 프로그램이 강제로종료됩니다")
-				self.is_running = False
+
+	def	advanced_input(self, range0, range1, mode = 0):
+		try:
+			choice = input().strip()
+			idx = int(choice) - 1
+			if not (range0 <= idx < range1):
+				raise IndexError
+		except (ValueError):
+			print("범위내 숫자 이외에 입력하지 말아주세요")
+		except (IndexError):
+			print("적절한숫자가아닙니다")
+		except (KeyboardInterrupt, EOFError):
+			print("사용자에의해 프로그램이 강제 종료됩니다.")
+			self.isrunning = False
+		return idx
+	
+	def	solve_quiz(self, quiz):
 		pass
 
 	def	start_quiz(self):
