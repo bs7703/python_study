@@ -27,9 +27,9 @@ class QuizGame:
 			if idx is None:
 				pass
 			else:
-				func = self.config['menu_options'][idx]['action']
+				func = self.config['menu_options'][idx - 1]['action']
 				if hasattr(self, func):
-					getattr(self, func)(*([self.set_basic_quiz()] if idx == 0 else []))
+					getattr(self, func)(*([self.set_basic_quiz()] if (idx - 1) == 0 else []))
 				else :
 					print("해당 함수가 정의되지 않았습니다")
 					self.is_running = False
@@ -37,8 +37,8 @@ class QuizGame:
 	def	advanced_input(self, range0 = 0, range1 = 0, mode = 0):
 		try:
 			choice = input().strip()
-			idx = int(choice) - 1
-			if not (range0 <= idx < range1):
+			idx = int(choice)
+			if not (range0 <= (idx - 1) < range1):
 				raise IndexError
 		except (ValueError):
 			print("범위내 숫자 이외에 입력하지 말아주세요" + (" 0점처리됩니다" if mode == 1 else ""))
@@ -57,34 +57,31 @@ class QuizGame:
 	
 	def	solve_quiz(self, quiz):
 		data = None
-		print(quiz.show_quiz())
-		print("\n 정답이외의 힌트가 필요하면 5를 누르세요. n점차감")
+		hinted = 0
+		print(f"\n해당문제의 배점은 {quiz.show_score() * self.config['game_settings']['answer_factor']} 입니다.\n\n{quiz.show_quiz()}")
+		print(f"\n정답이외의 힌트가 필요하면 5를 누르세요. {quiz.show_score() * self.config['game_settings']['hint_factor']}점차감")
 		while data is None:
 			data = self.advanced_input(0, len(quiz.choices) + 1, 1)
-			if (data == len(quiz.choices) + 1):
-				#점수차감과 힌트가없을시 미차감구문 작성
+			if (data == (len(quiz.choices) + 1) and hinted is 0):
 				print(quiz.show_hint())
+				self.score -= quiz.show_score() * self.config['game_settings']['hint_factor']
 				data = self.advanced_input(0, len(quiz.choices), 2)
+				hinted = 1
 		return quiz.check_answers(data)
 
 	def	start_quiz(self, quiz_list): 
 		score = 0
-		#현재는 스코어의득실이 1로기본설정
 		for i, a in enumerate(quiz_list, 1):
 			answer = self.solve_quiz(a)
-			if (answer):
-				print("정답입니다 축하합니다")
-				score += 1
-			else:
-				print("오답입니다 분발하세요")
-				score -= 1
+			print("정답입니다 축하합니다" if answer > 0 else "오답입니다 분발하세요")
+			score += answer * self.config['game_settings']['answer_factor' if answer > 0 else 'wrong_factor']
 		self.score = score
 
 	def	set_basic_quiz(self):
 		base_data = []
 		try:
 			for i, a in enumerate(self.basic_data, 1):
-				base_data.append(Quiz(a['question'], a['choices'], a['answer'], a['hint'], a['explanation']))
+				base_data.append(Quiz(a['question'], a['choices'], a['answer'], a['hint'], a['explanation'], a['answer_point']))
 		except (ValueError):
 			print(f"{e}")
 		return base_data

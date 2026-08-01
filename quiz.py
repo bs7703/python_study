@@ -1,13 +1,16 @@
 class Quiz:
-    def __init__(self, question, choices, answer, hint = None, explanation = None, answer_score = None):
-        if (len(choices) != 4):
+    def __init__(self, question, choices, answer, hint = None, explanation = None, answer_score = 1):
+        if (len(choices) != 4) :
             raise ValueError(f"선택지는 반드시 4개여야합니다. 현재 {len(choices)}개")
+        if (answer_score <= 0):
+            raise ValueError(f"정답 점수는 1점보다 높아야합니다.")
         self.question = question
         self.choices = choices
         self.answer = answer
         self.hint = hint
         self.explanation = explanation
         self.answer_score = answer_score
+    
     def show_quiz(self):
         text = f"{self.question}\n"
         for i, choice in enumerate(self.choices, 1):
@@ -21,4 +24,7 @@ class Quiz:
         return f" 해설: {self.explanation}" if self.explanation else "해설이 없습니다."
 
     def check_answers(self, user_input):
-        return (user_input == self.answer) * self.answer_score
+        return self.answer_score if user_input == self.answer else -1 * self.answer_score
+
+    def show_score(self):
+        return self.answer_score
