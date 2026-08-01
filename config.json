@@ -2,9 +2,9 @@
     "game_title" : "파이썬 퀴즈게임 v1.0" ,
     "menu_options" :  
     [
-        "1. 게임 시작",
-        "2. 점수 확인",
-        "3. 종료"
+        {"label": "1. 게임 시작", "action": "start_quiz"} ,
+        {"label": "2. 점수 확인", "action": "show_score"} ,
+        {"label": "3. 종료", "action": "exit_game"}
     ],
     "exit_message" : "게임을 종료합니다" ,
     "ui_style":

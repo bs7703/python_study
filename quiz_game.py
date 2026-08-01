@@ -4,19 +4,37 @@ class QuizzGame:
 	def	__init__(self, config_path):
 		with open(config_path, 'r', encoding='utf-8') as f:
 			self.config = json.load(f)
-		self.isrunning = True
+		self.is_running = True
 		pass
 
 	def	display_menu(self):
 		#화면에 메뉴를 표시함
 		print(f"\n=== {self.config['game_title']} ===")
 		print(f"{self.config['ui_style']['line_char']}" * self.config['ui_style']['line_length'])
-		for	option in self.config['menu_options']:	
+		for	option in self.config['menu_options']['label']:	
 			print(option)
 		print(f"{self.config['ui_style']['line_char']}" * self.config['ui_style']['line_length'])
 	def	run(self):
-		self.display_menu()
+		while self.is_running:
+			choice = int(input("원하는 메뉴 번호를 입력하세요:").strip())
+			idx = choice - 1
+			try:
+				if idx >= 3 or idx <= 0:
+					raise IndexError
+				func = getattr(self, self.config['menu_options'][idx]['action'])
+				func()
+			except (ValueError, IndexError) :
+				print(f"{choice}는 적절한 번호가아닙니다 다시입력해주세요")
 		pass
+
+	def	start_game(self):
+		pass
+
+	def	show_score(self):
+		pass
+
+	def	exit_game(self):
+		self.is_running = False
 
 	def	play_quiz(self):
 		pass
