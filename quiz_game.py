@@ -73,7 +73,8 @@ class QuizGame:
 		score = 0
 		for i, a in enumerate(quiz_list, 1):
 			answer = self.solve_quiz(a)
-			print("정답입니다 축하합니다" if answer > 0 else "오답입니다 분발하세요")
+			print(f"정답입니다 축하합니다. {answer * self.config['game_settings']['answer_factor']}만큼 득점했습니다."
+		  if answer > 0 else f"오답입니다 {answer * self.config['game_settings']['wrong_factor']}만큼 실점했습니다.")
 			score += answer * self.config['game_settings']['answer_factor' if answer > 0 else 'wrong_factor']
 		self.score = score
 
