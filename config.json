@@ -1,0 +1,15 @@
+{
+    "game_title" : "파이썬 퀴즈게임 v1.0" ,
+    "menu_options" :  
+    [
+        "1. 게임 시작",
+        "2. 점수 확인",
+        "3. 종료"
+    ],
+    "exit_message" : "게임을 종료합니다"
+    "ui_style":
+    {
+        "line_char" : "=",
+        "line_length" : 30
+    }
+}

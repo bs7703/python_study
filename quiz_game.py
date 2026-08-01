@@ -4,6 +4,13 @@ class QuizzGame:
 	def	__init__(self):
 		pass
 
+	def	display_menu(self):
+		#화면에 메뉴를 표시함
+		print("\n" * "="*20)
+		print("파이썬 퀴즈 게임")
+		print("="*20)
+		print("1.게임시작")
+		print("2.")
 	def	run(self):
 		pass
 
