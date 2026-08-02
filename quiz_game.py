@@ -126,7 +126,7 @@ class QuizGame:
 			print(f"알 수 없는 오류가 발생했습니다: {e}")
 		if data is not None and not self.check_data(data):
 			data = None
-		 return data
+		return data
 
 	def	save_data(json_path, data):
 		try:
