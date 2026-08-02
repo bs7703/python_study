@@ -96,12 +96,47 @@ class QuizGame:
 	def	add_quiz(self):
 		pass
 
-	def	save_data(self):
-		pass
+	def	check_data(self, data):
+		if not isinstance(data, list):
+			print("데이터는 리스트 형식이어야 합니다.")
+			return False
+		for i, item in enumerate(data):
+			if not isinstance(item, dict):
+				print(f"데이터 항목 {i + 1}은 딕셔너리 형식이어야 합니다.")
+				return False
+			required_keys = ['question', 'choices', 'answer', 'hint', 'explanation', 'answer_point']
+			for key in required_keys:
+				if key not in item:
+					print(f"데이터 항목 {i + 1}에 '{key}' 키가 없습니다.")
+					return False
+		return True
+	
+	def	load_data(json_path):
+		data = None
+		try:
+			with open(json_path, 'r', encoding='utf-8') as f:
+				data = json.load(f)
+		except (FileNotFoundError):
+			print(f"{json_path} 파일이 존재하지 않습니다.")
+		except (json.JSONDecodeError):
+			print(f"{json_path} 파일이 올바른 JSON 형식이 아니거나 손상되었습니다.")
+		except (PermissionError):
+			print(f"{json_path} 파일에 접근할 권한이 없습니다.")
+		except (Exception) as e:
+			print(f"알 수 없는 오류가 발생했습니다: {e}")
+		if data is not None and not self.check_data(data):
+			data = None
+		 return data
 
-	def	load_data(self):
-		pass
-
+	def	save_data(json_path, data):
+		try:
+			with open(json_path, 'w', encoding='utf-8') as f:
+				json.dump(data, f, ensure_ascii=False, indent=4)
+		except (PermissionError):
+			print(f"{json_path} 파일에 접근할 권한이 없습니다.")
+		except (Exception) as e:
+			print(f"알 수 없는 오류가 발생했습니다: {e}")
+	
 if	__name__ == "__main__":
 	game = QuizGame("config.json", "basic_data.json")
 	game.run()
