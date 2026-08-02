@@ -4,7 +4,8 @@
     [
         {"label": "1. 게임 시작", "action": "start_quiz"} ,
         {"label": "2. 점수 확인", "action": "show_score"} ,
-        {"label": "3. 종료", "action": "exit_game"}
+        {"label": "3. 퀴즈 추가", "action": "add_quiz"}, 
+        {"label": "4. 종료", "action": "exit_game"}
     ],
     "exit_message" : "게임을 종료합니다" ,
     "ui_style":
@@ -19,5 +20,6 @@
     "answer_factor":3,
     "hint_factor":1,
     "wrong_factor":2
-    }
+    },
+    "best_score" : 0
 }

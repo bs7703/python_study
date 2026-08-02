@@ -1,15 +1,26 @@
 #quiz_game.py
 import json
 from quiz import Quiz
+
+FINAL_REQUIRED_KEYS = ['question', 'choices', 'answer', 'hint', 'explanation', 'answer_point']
+
 class QuizGame:
-	def	__init__(self, config_path, basic_path):
-		with open(config_path, 'r', encoding='utf-8') as f:
-			self.config = json.load(f)
-		with open(basic_path, 'r', encoding='utf-8') as f:
-			self.basic_data = json.load(f)
+	def	__init__(self, config_path, load_path):
+		try:
+			self.config = self.load_data(config_path)
+		except (Exception):
+			exit()
+		try:
+			self.basic_data = self.load_quiz(load_path)
+		except (Exception):
+			exit()
+		if (self.basic_data == None):
+			exit()
+		
+		self.load_path = load_path
 		self.is_running = True
 		self.score = 0
-		pass
+		self.best_score = self.config['best_score']
 
 	def	display_menu(self):
 		#화면에 메뉴를 표시함
@@ -51,7 +62,7 @@ class QuizGame:
 			return None
 		except (KeyboardInterrupt, EOFError):
 			print("사용자에의해 프로그램이 강제 종료됩니다.")
-			self.isrunning = False
+			self.is_running = False
 			return None
 		return idx
 	
@@ -62,7 +73,7 @@ class QuizGame:
 		print(f"\n정답이외의 힌트가 필요하면 5를 누르세요. {quiz.show_score() * self.config['game_settings']['hint_factor']}점차감")
 		while data is None:
 			data = self.advanced_input(0, len(quiz.choices) + 1, 1)
-			if (data == (len(quiz.choices) + 1) and hinted is 0):
+			if (data == (len(quiz.choices) + 1) and hinted == 0):
 				print(quiz.show_hint())
 				self.score -= quiz.show_score() * self.config['game_settings']['hint_factor']
 				data = self.advanced_input(0, len(quiz.choices), 2)
@@ -83,7 +94,7 @@ class QuizGame:
 		try:
 			for i, a in enumerate(self.basic_data, 1):
 				base_data.append(Quiz(a['question'], a['choices'], a['answer'], a['hint'], a['explanation'], a['answer_point']))
-		except (ValueError):
+		except (ValueError) as e:
 			print(f"{e}")
 		return base_data
 	
@@ -94,24 +105,77 @@ class QuizGame:
 		self.is_running = False
 
 	def	add_quiz(self):
-		pass
+		my_quiz = {}
+		print("문제를 입력하세요.")
+		my_str = input().strip()
+		if not isinstance(my_str, str):
+			print("문자열만 입력하세요")
+			return None
+		my_quiz[FINAL_REQUIRED_KEYS[0]] = my_str
+		for i in range(4):
+			print(f"{i}번 문제를 입력하세요:")
+			my_str0 = input().strip()
+			my_quiz[FINAL_REQUIRED_KEYS[i + 1]] = my_str0
+		self.basic_data.append(my_quiz)
+		self.save_quiz(self.basic_data)
+		return True
+
+	def	save_quiz(self, data):
+		self.save_data(self.load_path, data)
+
+	def	load_quiz(self, load_path):
+		try:
+			data = self.load_data(load_path)
+		except (Exception) as e:
+			raise e
+		
+		if not self.check_data(data):
+			print("데이터가 적절하지않습니다")
+			return None
+		return data
 
 	def	check_data(self, data):
 		if not isinstance(data, list):
 			print("데이터는 리스트 형식이어야 합니다.")
 			return False
+		
 		for i, item in enumerate(data):
 			if not isinstance(item, dict):
 				print(f"데이터 항목 {i + 1}은 딕셔너리 형식이어야 합니다.")
 				return False
-			required_keys = ['question', 'choices', 'answer', 'hint', 'explanation', 'answer_point']
-			for key in required_keys:
+
+			for key in FINAL_REQUIRED_KEYS:
 				if key not in item:
 					print(f"데이터 항목 {i + 1}에 '{key}' 키가 없습니다.")
 					return False
+				
+				if not isinstance(item["question"], str) or not item["question"].strip():
+					print(f"오류: 항목 {i + 1}의 질문이 비어있거나 문자열이 아닙니다.")
+					return False
+				
+				choices = item["choices"]
+
+				if not isinstance(choices, list) or len(choices) != 4:
+					print(f"오류: 항목 {i + 1}의 보기는 반드시 4개여야 합니다. (현재: {len(choices) if isinstance(choices, list) else '리스트 아님'})")
+					return False
+
+				if not all(isinstance(c, str) and c.strip() for c in choices):
+					print(f"오류: 항목 {i + 1}의 모든 보기는 비어있지 않은 문자열이어야 합니다.")
+					return False
+
+				answer = item["answer"]
+
+				if not isinstance(answer, int) or not (1 <= answer <= 4):
+					print(f"오류: 항목 {i + 1}의 정답은 1에서 4 사이의 정수여야 합니다. (입력값: {answer})")
+					return False
+				
+				point = item["answer_point"]
+				if not isinstance(point, int) or not (0 < point < 10):
+					print(f"오류: 항목 {i + 1}의 점수는 0보다 크고 10보다 작은 정수여야 합니다. (입력값: {point})")
+					return False
 		return True
-	
-	def	load_data(json_path):
+
+	def	load_data(self, json_path):
 		data = None
 		try:
 			with open(json_path, 'r', encoding='utf-8') as f:
@@ -124,11 +188,9 @@ class QuizGame:
 			print(f"{json_path} 파일에 접근할 권한이 없습니다.")
 		except (Exception) as e:
 			print(f"알 수 없는 오류가 발생했습니다: {e}")
-		if data is not None and not self.check_data(data):
-			data = None
 		return data
 
-	def	save_data(json_path, data):
+	def	save_data(self, json_path, data):
 		try:
 			with open(json_path, 'w', encoding='utf-8') as f:
 				json.dump(data, f, ensure_ascii=False, indent=4)
@@ -138,5 +200,5 @@ class QuizGame:
 			print(f"알 수 없는 오류가 발생했습니다: {e}")
 	
 if	__name__ == "__main__":
-	game = QuizGame("config.json", "basic_data.json")
+	game = QuizGame("config.json", "state.json")
 	game.run()
