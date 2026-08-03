@@ -3,6 +3,12 @@ import json
 from quiz import Quiz
 
 FINAL_REQUIRED_KEYS = ['question', 'choices', 'answer', 'hint', 'explanation', 'answer_point']
+ANSWER_RANGE_MIN = 1
+ANSWER_RANGE_MAX = 4
+CHOICES_NUM = 4
+ANSWER_POINT_MIN = 1
+ANSWER_POINT_MAX = 10
+STR_LEN = 50
 
 class QuizGame:
 	def	__init__(self, config_path, load_path):
@@ -155,7 +161,7 @@ class QuizGame:
 				
 				choices = item["choices"]
 
-				if not isinstance(choices, list) or len(choices) != 4:
+				if not isinstance(choices, list) or len(choices) != CHOICES_NUM:
 					print(f"오류: 항목 {i + 1}의 보기는 반드시 4개여야 합니다. (현재: {len(choices) if isinstance(choices, list) else '리스트 아님'})")
 					return False
 
@@ -165,13 +171,13 @@ class QuizGame:
 
 				answer = item["answer"]
 
-				if not isinstance(answer, int) or not (1 <= answer <= 4):
+				if not isinstance(answer, int) or not (ANSWER_RANGE_MIN <= answer <= ANSWER_RANGE_MAX):
 					print(f"오류: 항목 {i + 1}의 정답은 1에서 4 사이의 정수여야 합니다. (입력값: {answer})")
 					return False
 				
 				point = item["answer_point"]
-				if not isinstance(point, int) or not (0 < point < 10):
-					print(f"오류: 항목 {i + 1}의 점수는 0보다 크고 10보다 작은 정수여야 합니다. (입력값: {point})")
+				if not isinstance(point, int) or not (ANSWER_POINT_MIN < point < ANSWER_POINT_MAX):
+					print(f"오류: 항목 {i + 1}의 점수는 {ANSWER_POINT_MIN}보다 크고 {ANSWER_POINT_MAX}보다 작은 정수여야 합니다. (입력값: {point})")
 					return False
 		return True
 
