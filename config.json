@@ -5,7 +5,9 @@
         {"label": "1. 게임 시작", "action": "start_quiz"} ,
         {"label": "2. 점수 확인", "action": "show_score"} ,
         {"label": "3. 퀴즈 추가", "action": "add_quiz"}, 
-        {"label": "4. 종료", "action": "exit_game"}
+        {"label": "4. 퀴즈 보기", "action": "show_quiz"},
+        {"label": "5. 퀴즈 명시적 저장", "action": "save_quiz"}, 
+        {"label": "6. 종료", "action": "exit_game"}
     ],
     "exit_message" : "게임을 종료합니다" ,
     "ui_style":

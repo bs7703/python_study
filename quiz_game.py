@@ -1,6 +1,8 @@
 #quiz_game.py
 import json
 from quiz import Quiz
+import sys
+input = sys.stdin.readline
 
 FINAL_REQUIRED_KEYS = ['question', 'choices', 'answer', 'hint', 'explanation', 'answer_point']
 ANSWER_RANGE_MIN = 1
@@ -8,8 +10,9 @@ ANSWER_RANGE_MAX = 4
 CHOICES_NUM = 4
 ANSWER_POINT_MIN = 1
 ANSWER_POINT_MAX = 10
-STR_LEN = 50
-
+STR_LEN_MAX = 50
+STR_LEN_MIN = 5
+BASE_ANSWER_POINT = 1
 class QuizGame:
 	def	__init__(self, config_path, load_path):
 		try:
@@ -40,13 +43,20 @@ class QuizGame:
 		while self.is_running:
 			self.display_menu()
 			print(f"숫자를 입력해주세요(1~{len(self.config['menu_options'])}):")
-			idx = self.advanced_input(0,len(self.config['menu_options']),0)
+			try:
+				idx = self.advanced_input(0,len(self.config['menu_options']),0)
+			except (KeyboardInterrupt, EOFError):
+				self.is_running = False
+				idx = None
 			if idx is None:
 				pass
 			else:
 				func = self.config['menu_options'][idx - 1]['action']
 				if hasattr(self, func):
-					getattr(self, func)(*([self.set_basic_quiz()] if (idx - 1) == 0 else []))
+					try:
+						getattr(self, func)(*([self.set_basic_quiz()] if (idx - 1) == 0 else []))
+					except (EOFError, KeyboardInterrupt):
+						self.is_running = False
 				else :
 					print("해당 함수가 정의되지 않았습니다")
 					self.is_running = False
@@ -66,24 +76,40 @@ class QuizGame:
 			else:
 				print("힌트를보고 나면 정답을 입력해야합니다")
 			return None
-		except (KeyboardInterrupt, EOFError):
+		except (KeyboardInterrupt, EOFError) as E:
 			print("사용자에의해 프로그램이 강제 종료됩니다.")
-			self.is_running = False
-			return None
+			raise E
 		return idx
 	
+	def	advanced_strinput(self):
+		try:
+			choices = input().strip()
+			choices = str(choices)
+			if not (STR_LEN_MIN <= len(choices) <= STR_LEN_MAX) or not (isinstance(choices, str)):
+				raise ValueError
+			return choices
+		except (EOFError, KeyboardInterrupt) as E:
+			print("사용자에의해 프로그램이 강제종료됩니다.")
+			raise E
+		
 	def	solve_quiz(self, quiz):
 		data = None
 		hinted = 0
 		print(f"\n해당문제의 배점은 {quiz.show_score() * self.config['game_settings']['answer_factor']} 입니다.\n\n{quiz.show_quiz()}")
 		print(f"\n정답이외의 힌트가 필요하면 5를 누르세요. {quiz.show_score() * self.config['game_settings']['hint_factor']}점차감")
 		while data is None:
-			data = self.advanced_input(0, len(quiz.choices) + 1, 1)
+			try:
+				data = self.advanced_input(0, len(quiz.choices) + 1, 1)
+			except (EOFError, KeyboardInterrupt) as E:
+				raise E
 			if (data == (len(quiz.choices) + 1) and hinted == 0):
 				print(quiz.show_hint())
 				self.score -= quiz.show_score() * self.config['game_settings']['hint_factor']
-				data = self.advanced_input(0, len(quiz.choices), 2)
 				hinted = 1
+				data = None
+			elif (data == (len(quiz.choices) + 1) and hinted != 0) :
+				print("\n힌트는 단 한번만 제공됩니다.")
+				data = None
 		return quiz.check_answers(data)
 
 	def	start_quiz(self, quiz_list): 
@@ -100,6 +126,9 @@ class QuizGame:
 		try:
 			for i, a in enumerate(self.basic_data, 1):
 				base_data.append(Quiz(a['question'], a['choices'], a['answer'], a['hint'], a['explanation'], a['answer_point']))
+				"""
+				상수를 이용해 동적할당 개선하기
+				"""
 		except (ValueError) as e:
 			print(f"{e}")
 		return base_data
@@ -108,26 +137,57 @@ class QuizGame:
 		print(self.score)
 
 	def	exit_game(self):
+		self.save_quiz()
 		self.is_running = False
 
+	def	show_quiz(self):
+		key = FINAL_REQUIRED_KEYS[0]
+		for item in self.basic_data:
+			print(f"{item[key]}")
+
+	def	init_quiz(self):
+		data = {}
+		data[FINAL_REQUIRED_KEYS[0]] = str("")
+		data[FINAL_REQUIRED_KEYS[1]] = []
+		data[FINAL_REQUIRED_KEYS[3]] = ""
+		data[FINAL_REQUIRED_KEYS[4]] = "" 
+		data[FINAL_REQUIRED_KEYS[5]] = BASE_ANSWER_POINT
+		return data
+	
 	def	add_quiz(self):
-		my_quiz = {}
-		print("문제를 입력하세요.")
-		my_str = input().strip()
-		if not isinstance(my_str, str):
-			print("문자열만 입력하세요")
-			return None
-		my_quiz[FINAL_REQUIRED_KEYS[0]] = my_str
-		for i in range(4):
-			print(f"{i}번 문제를 입력하세요:")
-			my_str0 = input().strip()
-			my_quiz[FINAL_REQUIRED_KEYS[i + 1]] = my_str0
+		my_quiz = self.init_quiz()
+		print(f"문제를 입력하세요. 문제는 {STR_LEN_MIN}와 {STR_LEN_MAX} 사이의 길이만 인정됩니다.")
+		is_run = True
+		while is_run:
+			try:
+				my_str = self.advanced_strinput()
+				is_run = False
+				my_quiz[FINAL_REQUIRED_KEYS[0]] = my_str
+			except (ValueError):
+				print("문자열의 길이가 적절하지않거나 문자열이아닙니다")
+			except (KeyboardInterrupt, EOFError) as E:
+				raise E
+		for i in range(CHOICES_NUM):
+			print(f"{i + 1}번 문항을 입력하세요 문항은 {STR_LEN_MIN}와 {STR_LEN_MAX} 사이의 길이만 인정됩니다.:")
+			is_run = True
+			while is_run:
+				try:
+					my_str = self.advanced_strinput()
+					is_run = False	
+					my_quiz[FINAL_REQUIRED_KEYS[1]].append(my_str)
+				except (ValueError):
+					print("문자열의 길이가 적절하지않습니다")
+				except (KeyboardInterrupt, EOFError) as E:
+					self.is_running = False
+					raise E
+			"""현재 점수와 힌트 설명은 비워두기 , 점수는 초기포인트 1점제공"""
+
 		self.basic_data.append(my_quiz)
-		self.save_quiz(self.basic_data)
 		return True
 
-	def	save_quiz(self, data):
-		self.save_data(self.load_path, data)
+	def	save_quiz(self):
+		self.save_data(self.load_path, self.basic_data)
+		print("퀴즈가 성공적으로 저장됬습니다.")
 
 	def	load_quiz(self, load_path):
 		try:
@@ -155,30 +215,30 @@ class QuizGame:
 					print(f"데이터 항목 {i + 1}에 '{key}' 키가 없습니다.")
 					return False
 				
-				if not isinstance(item["question"], str) or not item["question"].strip():
-					print(f"오류: 항목 {i + 1}의 질문이 비어있거나 문자열이 아닙니다.")
-					return False
+			if not isinstance(item["question"], str) or not item["question"].strip():
+				print(f"오류: 항목 {i + 1}의 질문이 비어있거나 문자열이 아닙니다.")
+				return False
 				
-				choices = item["choices"]
+			choices = item["choices"]
 
-				if not isinstance(choices, list) or len(choices) != CHOICES_NUM:
-					print(f"오류: 항목 {i + 1}의 보기는 반드시 4개여야 합니다. (현재: {len(choices) if isinstance(choices, list) else '리스트 아님'})")
-					return False
+			if not isinstance(choices, list) or len(choices) != CHOICES_NUM:
+				print(f"오류: 항목 {i + 1}의 보기는 반드시 {CHOICES_NUM}개여야 합니다. (현재: {len(choices) if isinstance(choices, list) else '리스트 아님'})")
+				return False
 
-				if not all(isinstance(c, str) and c.strip() for c in choices):
-					print(f"오류: 항목 {i + 1}의 모든 보기는 비어있지 않은 문자열이어야 합니다.")
-					return False
+			if not all(isinstance(c, str) and c.strip() for c in choices):
+				print(f"오류: 항목 {i + 1}의 모든 보기는 비어있지 않은 문자열이어야 합니다.")
+				return False
 
-				answer = item["answer"]
+			answer = item["answer"]
 
-				if not isinstance(answer, int) or not (ANSWER_RANGE_MIN <= answer <= ANSWER_RANGE_MAX):
-					print(f"오류: 항목 {i + 1}의 정답은 1에서 4 사이의 정수여야 합니다. (입력값: {answer})")
-					return False
+			if not isinstance(answer, int) or not (ANSWER_RANGE_MIN <= answer <= ANSWER_RANGE_MAX):
+				print(f"오류: 항목 {i + 1}의 정답은 {ANSWER_RANGE_MIN}에서 {ANSWER_RANGE_MAX} 사이의 정수여야 합니다. (입력값: {answer})")
+				return False
 				
-				point = item["answer_point"]
-				if not isinstance(point, int) or not (ANSWER_POINT_MIN < point < ANSWER_POINT_MAX):
-					print(f"오류: 항목 {i + 1}의 점수는 {ANSWER_POINT_MIN}보다 크고 {ANSWER_POINT_MAX}보다 작은 정수여야 합니다. (입력값: {point})")
-					return False
+			point = item["answer_point"]
+			if not isinstance(point, int) or not (ANSWER_POINT_MIN <= point <= ANSWER_POINT_MAX):
+				print(f"오류: 항목 {i + 1}의 점수는 {ANSWER_POINT_MIN}보다 크고 {ANSWER_POINT_MAX}보다 작은 정수여야 합니다. (입력값: {point})")
+				return False
 		return True
 
 	def	load_data(self, json_path):
