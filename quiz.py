@@ -21,6 +21,9 @@ class Quiz:
 
     def check_answers(self, user_input):
         return self.answer_point if user_input == self.answer else -1 * self.answer_point
-
+    
+    def get_answer(self):
+        return self.answer
+    
     def show_score(self):
         return self.answer_point
