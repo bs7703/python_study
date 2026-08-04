@@ -12,12 +12,15 @@ class QuizGame:
 		try:
 			self.basic_data = self.load_quiz(load_path)
 		except (Exception):
-			exit()
+			try:
+				self.basic_data = self.load_quiz(FINAL_BASIC_DATA_PATH)
+			except (Exception) as e:
+				print(e)
+				exit()
 		if (self.basic_data == None):
 			exit()
 		self.load_path = load_path
 		self.is_running = True
-		self.score = 0
 
 	def	ui_format(self, line_char, line_length, text):
 		return f"{line_char * line_length}\n{text}\n{line_char * line_length}"
@@ -285,5 +288,5 @@ class QuizGame:
 			raise e
 
 if	__name__ == "__main__":
-	game = QuizGame("config.json", "state.json")
+	game = QuizGame(FINAL_CONFIG_PATH, FINAL_QUIZ_DATA_PATH)
 	game.run()
