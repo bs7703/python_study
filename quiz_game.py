@@ -266,14 +266,18 @@ class QuizGame:
 		try:
 			with open(json_path, 'r', encoding='utf-8') as f:
 				data = json.load(f)
-		except (FileNotFoundError):
+		except (FileNotFoundError)as e:
 			print(f"{json_path}" + FINAL_FILE_NOT_FOUND_ERROR_MSG)
-		except (json.JSONDecodeError):
+			raise e
+		except (json.JSONDecodeError)as e:
 			print(f"{json_path}" + FINAL_JSON_DECODE_ERROR_MSG)
-		except (PermissionError):
+			raise e
+		except (PermissionError)as e:
 			print(f"{json_path}" + FINAL_PERMISSION_ERROR_MSG)
+			raise e
 		except (Exception) as e:
 			print(f"{json_path}" + FINAL_UNKNOWN_ERROR_MSG + f" 상세 오류: {e}")
+			raise e
 		return data
 
 	def	save_data(self, json_path, data):
