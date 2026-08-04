@@ -27,8 +27,11 @@ class QuizGame:
 		return f"{line_char * line_length}\n{text}\n{line_char * line_length}"
 	
 	def	display_menu(self):
+		print(self.config['game_title'])
+		str = ""
 		for	option in self.config['menu_options']:	
-			print(self.ui_format(self.config['ui_style']['line_char'], self.config['ui_style']['line_length'], option['label']))
+			str += option['label'] + "\n"
+		print(self.ui_format(self.config['ui_style']['line_char'], self.config['ui_style']['line_length'], str))
 		 
 	def	run(self):
 		while self.is_running:
@@ -85,18 +88,23 @@ class QuizGame:
 		data = None
 		hinted = False
 		score = 0
-		print(f"\n해당문제의 배점은 {quiz.show_score() * self.config['game_settings']['answer_factor']} 입니다.\n\n{quiz.show_quiz()}")
+		print(self.ui_format(self.config['ui_style']['line_char'], self.config['ui_style']['line_length'], FINAL_PROMPT_ANSWER_POINT_MSG.format(answer_point=quiz.show_score())))
+		print(quiz.show_quiz())
 		print(FINAL_PROMPT_HINT_SHOW_MSG.format(FINAL_HINT_NUM=FINAL_HINT_NUM, i=quiz.show_score() * self.config['game_settings']['hint_factor']))
 		while data is None:
 			data = self.advanced_input(0, len(quiz.choices) + 1, 1)
-			if (data == (len(quiz.choices) + 1) and hinted is False):
-				print(quiz.show_hint())
-				score -= quiz.show_score() * self.config['game_settings']['hint_factor']
-				hinted = True
+			if (data is len(quiz.choices) + 1 and quiz.show_hint() is None):
+				print(FINAL_HINT_NOT_POSSIBLE_ERROR_MSG)
 				data = None
-			elif (data == (len(quiz.choices) + 1) and hinted is True) :
-				print(FINAL_HINT_ONLY_MSG)
-				data = None
+			else:
+				if (data == (len(quiz.choices) + 1) and hinted is False):
+					print(quiz.show_hint())
+					score -= quiz.show_score() * self.config['game_settings']['hint_factor']
+					hinted = True
+					data = None
+				elif (data == (len(quiz.choices) + 1) and hinted is True) :
+					print(FINAL_HINT_ONLY_ERROR_MSG)
+					data = None
 		score += quiz.check_answers(data)
 		return score
 
@@ -111,8 +119,8 @@ class QuizGame:
 	def	set_basic_quiz(self):
 		base_data = []
 		try:
-			for i, a in enumerate(self.basic_data, 1):
-				base_data.append(Quiz(**{key: a[key] for key in FINAL_REQUIRED_KEYS}))
+			for a in enumerate(self.basic_data, 1):
+				base_data.append(Quiz(**{key: a[1][key] for key in FINAL_REQUIRED_KEYS}))
 		except (ValueError) as e:
 			print(f"{e}")
 		return base_data

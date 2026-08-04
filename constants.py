@@ -44,7 +44,8 @@ FINAL_CHOICES_NUM_ERROR_MSG = "데이터 항목 {i}의 선택지는 반드시 {F
 FINAL_CHOICES_STR_ERROR_MSG = "데이터 항목 {i}의 선택지는 반드시 비어있지 않은 문자열이어야 합니다."
 FINAL_ANSWER_RANGE_ERROR_MSG = "데이터 항목 {i}의 정답은 {FINAL_ANSWER_RANGE_MIN}에서 {FINAL_ANSWER_RANGE_MAX} 사이의 정수여야 합니다."
 FINAL_ANSWER_POINT_RANGE_ERROR_MSG = "데이터 항목 {i}의 점수는 {FINAL_ANSWER_POINT_MIN}보다 크고 {FINAL_ANSWER_POINT_MAX}보다 작은 정수여야 합니다."
-
+FINAL_HINT_NOT_POSSIBLE_ERROR_MSG = "힌트가 없습니다."
+FINAL_HINT_ONLY_ERROR_MSG = "힌트는 한 번만 사용할 수 있습니다."
 """
 ERROR_MSG_SECTION
 """
@@ -53,10 +54,11 @@ ERROR_MSG_SECTION
 PROMPT_MSG_SECTION
 """
 FINAL_SETTINGS_START_QUIZ_MSG = "퀴즈를 시작합니다. 각문제에는 각문제의 배점이 존재하며 각 항목당 배점과 계수를 곱해 점수가 책정됩니다. \n 정답을 맞추면 계수{answer_point}, 틀리면 계수{wrong_point}, 힌트를 쓰면 계수{hint_point}가 적용됩니다"
+FINAL_PROMPT_ANSWER_POINT_MSG = "해당문제의 배점은 {answer_point}점입니다."
 FINAL_PROMPT_ANSWER_SCORE_MSG = "정답입니다 축하합니다. {i}만큼 득점했습니다."
 FINAL_PROMPT_WRONG_SCORE_MSG = "오답입니다 {i}만큼 실점했습니다."
 FINAL_PROMPT_QUIZ_SCORE_MSG = "현재 점수: {i}점"
-FINAL_HINT_ONLY_MSG = "힌트는 한 번만 사용할 수 있습니다."
+
 FINAL_PROMPT_QUIZ_SCORE_MSG = "정답은 {answer}입니다. 사용자의 선택은{choice}입니다. 현재득점 {i}점 (점수가 음수면 틀린것.)"
 FINAL_PROMPT_HINT_SHOW_MSG = "\n정답이외의 힌트가 필요하면 {FINAL_HINT_NUM}를 누르세요. {i}점차감"
 """

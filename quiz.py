@@ -14,7 +14,7 @@ class Quiz:
         return text
 
     def show_hint(self):
-        return self.hint if self.hint is not None else "힌트가 없습니다"
+        return self.hint if self.hint is not None and self.hint != "" else None
 
     def get_explanation(self):
         return f" 해설: {self.explanation}" if self.explanation else "해설이 없습니다."
