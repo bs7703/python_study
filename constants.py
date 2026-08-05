@@ -53,6 +53,7 @@ FINAL_DATA_ITEM_INVALID_QUESTION_OR_CHOICES_ERROR_MSG = "데이터 항목 {i}의
 FINAL_DATA_ITEM_MISSING_KEY_ERROR_MSG = "데이터 항목 {i}에 '{key}' 키가 없습니다."
 FINAL_DATA_ITEM_NOT_DICT_ERROR_MSG = "데이터 항목 {i}은 딕셔너리 형식이어야 합니다."
 FINAL_DATA_NOT_LIST_ERROR_MSG = "데이터는 리스트 형식이어야 합니다."
+FINAL_DATA_NOT_SAVED_ERROR_MSG = "데이터항목검증(키 또는 값)에 문제가있어 저장이 불가능합니다"
 FINAL_EOF_ERROR_MSG = "프로그램이 비정상적으로 종료됩니다"
 FINAL_FILE_NOT_FOUND_ERROR_MSG = "파일을 찾을 수 없습니다. 경로를 확인해주세요."
 FINAL_FUNC_NOT_DEFINED_ERROR_MSG = "해당 함수가 정의되지 않았습니다."

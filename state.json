@@ -1,7 +1,12 @@
 {
     "best_score": 26,
     "score_list": [
-
+        {
+            "date": "2026-08-05 17:19:45",
+            "selected_quiz_count": 5,
+            "total_quiz_solved_count": 1,
+            "score": -6
+        }
     ],
     "quizzes": [
         {

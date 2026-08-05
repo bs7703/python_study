@@ -155,15 +155,14 @@ class QuizGame:
     def solve_quiz(self, quiz):
         hinted = False
         score = 0
+        answer = None
 
         print(self.ui_format(self.config['ui_style']['line_char'], self.config['ui_style']['line_length'], FINAL_PROMPT_ANSWER_POINT_MSG.format(answer_point=quiz.show_score())))
         print(quiz.show_quiz())
         print(FINAL_PROMPT_HINT_SHOW_MSG.format(FINAL_HINT_NUM=FINAL_HINT_NUM, i=quiz.show_score() * self.config['game_settings']['hint_factor']))
-
-        answer = None
         while answer is None:
-            choice = self.advanced_input(1, len(quiz.choices) + 1)
-            if choice == len(quiz.choices) + 1:
+            choice = self.advanced_input(1, FINAL_CHOICES_NUM + 1)
+            if choice == (FINAL_CHOICES_NUM + 1):
                 if quiz.show_hint() is None:
                     print(FINAL_HINT_NOT_POSSIBLE_ERROR_MSG)
                 elif not hinted:
@@ -172,8 +171,8 @@ class QuizGame:
                     hinted = True
                 else:
                     print(FINAL_HINT_ONLY_ERROR_MSG)
-                continue
-            answer = choice
+            else:
+                answer = choice
 
         result = quiz.check_answers(answer)
         score += result * (self.config['game_settings']['answer_factor'] if result > 0 else self.config['game_settings']['wrong_factor'])
@@ -288,6 +287,13 @@ class QuizGame:
             raise e
 
     def save_quiz(self):
+        if not("quizzes" in self.basic_data or "best_score" in self.basic_data or "score_list" in self.basic_data):
+            print(FINAL_DATA_NOT_SAVED_ERROR_MSG)
+            return
+        else:
+            if not(self.check_data(self.basic_data['quizzes']) or self.check_score_list(self.basic_data['score_list']) or isinstance(self.basic_data['best_score'], int)):
+                print(FINAL_DATA_NOT_SAVED_ERROR_MSG)
+                return
         self.save_data(self.load_path, self.basic_data)
         print(FINAL_PROMPT_QUIZ_SAVED_MSG)
 
@@ -472,8 +478,3 @@ class QuizGame:
             settings['show_explanation'] = FINAL_SHOW_EXPLANATION
 
         return settings
-
-
-if __name__ == "__main__":
-    game = QuizGame(FINAL_CONFIG_PATH, FINAL_QUIZ_DATA_PATH)
-    game.run()

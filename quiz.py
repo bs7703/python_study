@@ -6,6 +6,7 @@ class Quiz:
         self.explanation = explanation
         self.answer_point = answer_point
         self.question = question
+        self.hint = hint
         
     def show_quiz(self):
         text = f"{self.question}\n"
